@@ -1,4 +1,4 @@
-# chatwork-ganttchart
+# Chatwork Ganttchart
 
 Backlogのガントチャートを生成します。課題を任意に選択できるので、例えばメインの担当者別にガントチャートを作成するということができます。
 
