@@ -1,14 +1,46 @@
 require 'bundler/setup'
+
 require 'backlog_kit'
+
+require 'pry'
+require 'date'
+
+require 'sinatra'
+require 'sinatra/reloader'
+require "sinatra/json"
 require_relative 'config'
 
-client = BacklogKit::Client.new(
-  space_id: SPACE_ID,
-  api_key: API_KEY
-)
+require 'haml'
 
-client.get_space.body # get body
-client.get_space.headers # get headers
-client.get_space.status # get status
+
+get '/' do
+    haml :index
+end
+
+get '/gantt' do
+    # Return JSON for Gantt chart
+    # See http://taitems.github.io/jQuery.Gantt
+
+    client = BacklogKit::Client.new(
+      space_id: SPACE_ID,
+      api_key: API_KEY
+    )
+    response = []
+
+    ISSUE_KEYS.each do |key|
+        issue = client.get_issue(key)
+
+        response.push ({
+            name: key,
+            values:[
+                from: DateTime.parse(issue.body.start_date).strftime('%a %b %d %Y 00:00:00'),
+                to: DateTime.parse(issue.body.due_date).strftime('%a %b %d %Y 00:00:00'),
+                label: issue.body.summary,
+                customClass: 'ganttRed',
+            ],
+        })
+    end
+    json response
+end
 
 
